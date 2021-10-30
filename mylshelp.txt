@@ -1,0 +1,15 @@
+        
+  Invalid Argument , please enter the following argument only.
+        -a            do not ignore entries starting with .
+        -A            do not list implied . and ..
+        -c            with -lt: sort by, and show, ctime (time of last modification of
+                      filename status information) with -l: show ctime and      sort  by  name
+                      otherwise: sort by ctime
+        -d            list directory entries instead of contents, and do not  derefer-
+                      ence symbolic links
+        -i            with -l, print the ind_inform number of each filename
+        -l            use a long listing format
+        -n            like -l, but list numeric user and group IDs
+        -R            list subdirectories recursively
+        -s            with -l, print size of each filename, in blocks
+        -t            sort by modification time

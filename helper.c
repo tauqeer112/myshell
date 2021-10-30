@@ -3,6 +3,7 @@
 #include <limits.h>
 
 
+
 const char* LookLikeShell(){
     char hostname[HOST_NAME_MAX];
     char username[LOGIN_NAME_MAX];
@@ -53,7 +54,7 @@ int builtin_cd(char **args)
 }
 
 char **splitLine(char *line)
-{
+{   
 	char **tokens = (char **)malloc(sizeof(char *) * 64);
 	char *token;
 	char delim[10] = " \t\n\r\a";
@@ -81,18 +82,19 @@ char **splitLine(char *line)
 		token = strtok(NULL, delim);
 	}
 	tokens[pos] = NULL;
-	return tokens;
+    return tokens;
+	
 }
 
 
-void printhelpfile(){
+void printfile(char *filename){
 
     FILE *fptr;
   
-    char filename[100], c;
+    char c;
   
     // Open file
-    fptr = fopen("help.txt", "r");
+    fptr = fopen(filename, "r");
     if (fptr == NULL)
     {
         printf("Cannot open file \n");
@@ -108,4 +110,12 @@ void printhelpfile(){
     }
     printf("\n");
     fclose(fptr);
+}
+
+int count2D(char **argv){
+	int i=1;
+	while(argv[i] != NULL){
+		i++;
+	}
+	return i;
 }

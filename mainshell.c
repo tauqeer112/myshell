@@ -1,17 +1,8 @@
 
 #include "csapp.h"
-#include "limits.h"
-#define LINE_SIZE 255
-#define ARG_SIZE 20
-#define HISTORY_SIZE 50
-#include "limits.h"
-#define ARG_MAX 2097152
 #include <readline/readline.h>
 #include <readline/history.h>
 #include "myheaders.h"
-
-
-
 
 
 int main(int argc, char const *argv[]){
@@ -24,6 +15,7 @@ int main(int argc, char const *argv[]){
 
   cmd = readline(look);
   args=splitLine(cmd);
+  int argssize = count2D(args);
   memset(looklike,0,sizeof(looklike));
   if(strlen(cmd)){
     add_history(cmd);
@@ -31,9 +23,32 @@ int main(int argc, char const *argv[]){
   if(!strcmp(cmd,"")){
       continue;
   }
+  else if(!strcmp(args[0],"myls")){
+      char lsargs[50]={0};
+      strcat(lsargs,"./myls");
+      strcat(lsargs," ");
+      for (int i = 1; i < argssize; i++)
+      {   
+          strcat(lsargs,args[i]);
+          strcat(lsargs," ");
+      }
+      
+      system(lsargs);
+  }else if(!strcmp(args[0],"mycp")){
+      char cpargs[50]={0};
+      strcat(cpargs,"./mycp");
+      strcat(cpargs," ");
+      for (int i = 1; i < argssize; i++)
+      {   
+          strcat(cpargs,args[i]);
+          strcat(cpargs," ");
+      }
+      
+      system(cpargs);
+  }
   else if(!strcmp(args[0],"cd")){builtin_cd(args);}
   else if(!strcmp(args[0],"exit")){exit(0);}
-  else if(!strcmp(args[0],"help")){printhelpfile();}
+  else if(!strcmp(args[0],"help")){printfile("help.txt");}
   else if(!strcmp(args[0],"man")){
       if(fork()==0){
        execvp(args[0],args);
