@@ -45,7 +45,19 @@ int main(int argc, char const *argv[]){
       }
       
       system(cpargs);
+  }else if(!strcmp(args[0],"mymv")){
+      char mvargs[50]={0};
+      strcat(mvargs,"./mymv");
+      strcat(mvargs," ");
+      for (int i = 1; i < argssize; i++)
+      {   
+          strcat(mvargs,args[i]);
+          strcat(mvargs," ");
+      }
+      
+      system(mvargs);
   }
+  
   else if(!strcmp(args[0],"cd")){builtin_cd(args);}
   else if(!strcmp(args[0],"exit")){exit(0);}
   else if(!strcmp(args[0],"help")){printfile("help.txt");}
