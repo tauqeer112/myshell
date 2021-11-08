@@ -45,6 +45,28 @@ int main(int argc, char const *argv[]){
       }
       
       system(cpargs);
+     } else if(!strcmp(args[0],"mygrep")){
+      char grepargs[50]={0};
+      strcat(grepargs,"./mygrep");
+      strcat(grepargs," ");
+      for (int i = 1; i < argssize; i++)
+      {   
+          strcat(grepargs,args[i]);
+          strcat(grepargs," ");
+      }
+      
+      system(grepargs);
+     }else if(!strcmp(args[0],"myps")){
+      char psargs[50]={0};
+      strcat(psargs,"./myps");
+      strcat(psargs," ");
+      for (int i = 1; i < argssize; i++)
+      {   
+          strcat(psargs,args[i]);
+          strcat(psargs," ");
+      }
+      
+      system(psargs);
   }else if(!strcmp(args[0],"mymv")){
       char mvargs[50]={0};
       strcat(mvargs,"./mymv");

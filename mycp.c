@@ -62,6 +62,7 @@ void copyDir(const char *source, const char *target) {
   //else something bad happened
   else {
     fprintf(stderr, "Destination must be directory or created with -R flag set.\n");
+    printf("%s",usage);
     exit(EXIT_FAILURE);
   }
 
@@ -143,11 +144,13 @@ int main(int argc, char **argv) {
   //arg1 non-existant or incorrect format
   if ((lstat(arg1, &buff)) < 0) {
     fprintf(stderr, "Source file or directory does not exist.\n");
+    printf("%s",usage);
     exit(EXIT_FAILURE);
   }
   //file && -r
   else if (rflag == 1 && !S_ISDIR(buff.st_mode)) {
     fprintf(stderr, "Source must be a directory with -R option.\n");
+    printf("%s",usage);
     exit(EXIT_FAILURE);
   }
 
@@ -182,6 +185,7 @@ int main(int argc, char **argv) {
     }
     else if ((lstat(arg1, &buff)) < 0) {
     fprintf(stderr, "Source file or directory does not exist.\n");
+    printf("%s",usage);
     exit(EXIT_FAILURE);
   } 
     }

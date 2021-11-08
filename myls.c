@@ -1,17 +1,8 @@
 /***
-        -a            do not ignore entries starting with .
-        -A            do not list implied . and ..
-        -c            with -lt: sort by, and show, ctime (time of last modification of
-                      filename status information) with -l: show ctime and      sort  by  name
-                      otherwise: sort by ctime
-        -d            list directory entries instead of contents, and do not  derefer-
-                      ence symbolic links
-        -i            with -l, print the ind_inform number of each filename
+        -a            do not ignore entries starting with .(hidden)
         -l            use a long listing format
         -n            like -l, but list numeric user and group IDs
-        -R            list subdirectories recursively
-        -s            with -l, print size of each filename, in blocks
-        -t            sort by modification time
+      
 **/
 
         
@@ -53,7 +44,7 @@ void parse_args(int argc, char **argv)
 {
 
         char c;
-        while( (c=getopt(argc,argv,"tcdilnRsaA")) != -1 )
+        while( (c=getopt(argc,argv,"aln")) != -1 )
         {
 	       switch(c)
                {
@@ -61,27 +52,7 @@ void parse_args(int argc, char **argv)
                         	        bit_a = true;
                                 	break;
 
-                        case 'A':
-	                                bit_A = true;
-        	                        break;
-
-                        case 'c':
-                	                bit_c = true;
-
-                        	        if(!bit_t)
-                                	        temp = 'c';
-
-	                                else
-	                                        temp = 't';
-        	                        break;
-
-                        case 'd':
-	                                bit_d = true;
-	                                break;
-
-                        case 'i':
-	                                bit_i = true;
-	                                break;
+               
 
                         case 'l':
 	                                bit_l = true;
@@ -91,27 +62,10 @@ void parse_args(int argc, char **argv)
 	                                bit_n = true;
 	                                break;
 
-                        case 'R':
-	                                bit_R = true;
-	                                break;
-
-                        case 's':
-	                                bit_s = true;
-	                                break;
-
-                        case 't':
-	                                bit_t = true;
-
-	                                if(!bit_c)
-	                                        temp = 't';
-
-	                                else
-	                                        temp = 'c';
-
-	                                break;
-
                          default:
-                                	printf("Invalid option !!!\n");
+                                	printfile("mylshelp.txt");
+									exit(0);
+							
                 }
         }
 
@@ -179,9 +133,6 @@ int print_data(char* name, const struct stat *statbuf, int count)
 	{	//remember USR GRP OTH
          printpermission(statbuf);
 
-		if(bit_i)
-			printf("%8lu",statbuf->st_ino);
-
 		printf("%3lu",statbuf->st_nlink);
 
 		if(bit_s)
@@ -203,10 +154,6 @@ int print_data(char* name, const struct stat *statbuf, int count)
 
 		printf("%7ld",statbuf->st_size);
 
-		if(!bit_c)
-			strftime(time,100,"%b %d %H:%M",localtime(&statbuf->st_mtime));
-
-		else
 			strftime(time,100,"%b %d %H:%M",localtime(&statbuf->st_ctime));
 
 		printf(" %s ",time);
@@ -271,18 +218,12 @@ int dir_traverse(char *par, Oper *op)
 		lstat(filename,buf[i]);
 	}
 
-	if(bit_t || bit_c)
-		sort(entry,buf,count1);
-
-	if(bit_l && bit_R)
-		printf("\n%s\n",par);
-
 	for(i=0; i<count1; i++)
 	{
 		bool a, b;
 
-		a = (entry[i]->d_name[0]!='.' || bit_a || bit_A);
-		b = ((strcmp(entry[i]->d_name,".") && strcmp(entry[i]->d_name,"..")) || !bit_A);
+		a = (entry[i]->d_name[0]!='.' || bit_a);    //|| bit_A);
+		b = ((strcmp(entry[i]->d_name,".") && strcmp(entry[i]->d_name,".."))) ; //|| !bit_A);
 
 		if(a && b)
 			op(entry[i]->d_name, buf[i], count);
@@ -290,35 +231,7 @@ int dir_traverse(char *par, Oper *op)
 		if(bit_l)
 			continue;
 
-		if(bit_R)
-			if(S_ISDIR(buf[i]->st_mode))
-				if( strcmp(entry[i]->d_name,".") && strcmp(entry[i]->d_name,"..") )
-				{
-					strcpy(filename,par);
-
-					if(filename[ strlen(filename)-1 ] != '/')
-						strcat(filename,"/");
-
-					strcat(filename,entry[i]->d_name);
-					dir_traverse(filename,op);
-				}
 	}
-
-	if(bit_R && bit_l)
-		for(i=0; i<count1; i++)
-		{
-			if(S_ISDIR(buf[i]->st_mode))
-				if( strcmp(entry[i]->d_name,".") && strcmp(entry[i]->d_name,"..") )
-				{
-					strcpy(filename,par);
-
-					if(filename[ strlen(filename)-1 ] != '/')
-						strcat(filename,"/");
-
-					strcat(filename,entry[i]->d_name);
-					dir_traverse(filename,op);
-				}
-		}
 
 	end:
 		count--;
@@ -327,100 +240,6 @@ int dir_traverse(char *par, Oper *op)
 	return 0;
 
 }
-
-
-
-
-
-
-void sort(struct dirent **dir, struct stat **buf, int length)
-{
-
-	int i,j;
-	struct dirent *t_dir;
-	struct stat *tempStat;
-	char st = 0;
-
-	if(!bit_l)
-	{
-		if(bit_c)
-		{
-			if(bit_t)
-				st = temp;
-			else
-				st = 'c';
-		}
-
-		else
-			st = 't';
-	}
-
-	else
-	{
-		if(bit_c && bit_t)
-			st = 'c';
-
-		else if(bit_c)
-			st = 'n';
-
-		else
-			st = 't';
-	}
-
-	if(st == 't')
-	{
-		for(i=0; i<length; i++)
-			for(j=0; j<length-i-1; j++)
-				if(buf[j]->st_mtime > buf[j+1]->st_mtime)
-				{
-					t_dir = dir[j];
-					dir[j] = dir[j+1];
-					dir[j+1] = t_dir;
-
-					tempStat = buf[j];
-					buf[j] = buf[j+1];
-					buf[j+1] = tempStat;
-				}
-	}
-
-	else if(st == 'c')
-	{
-		for(i=0; i<length; i++)
-			for(j=0; j<length-i-1; j++)
-				if(buf[j]->st_ctime > buf[j+1]->st_ctime)
-				{
-					t_dir = dir[j];
-					dir[j] = dir[j+1];
-					dir[j+1] = t_dir;
-
-					tempStat = buf[j];
-					buf[j] = buf[j+1];
-					buf[j+1] = tempStat;
-				}
-	}
-
-	else
-	{
-		for(i=0; i<length; i++)
-			for(j=0; j<length-i-1; j++)
-				if(strcmp(dir[j]->d_name, dir[j+1]->d_name) > 0)
-				{
-					t_dir = dir[j];
-					dir[j] = dir[j+1];
-					dir[j+1] = t_dir;
-
-					tempStat = buf[j];
-					buf[j] = buf[j+1];
-					buf[j+1] = tempStat;
-				}
-	}
-
-}
-
-
-
-
-
 
 
 
